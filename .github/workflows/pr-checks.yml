@@ -1,0 +1,41 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop  # Add any branches where PRs should trigger checks
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (if needed)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install  # Change to pip install -r requirements.txt for Python, etc.
+
+      - name: Run Tests
+        run: npm test  # Change this to your test command
+
+      - name: Lint Code
+        run: npm run lint  # Add if you have a linter
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on Success
+        if: success()
+        run: echo "✅ PR checks passed!"
+
+      - name: Notify on Failure
+        if: failure()
+        run: echo "❌ PR checks failed!"
